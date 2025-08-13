@@ -1,0 +1,21 @@
+public with sharing class AccountContactsCtrl {
+    @AuraEnabled(cacheable=true)
+    public static List<Contact> getContactsByAccount(Id accountId) {
+        if (accountId == null) 
+        {
+            return new List<Contact>(); 
+        }
+        return [
+            SELECT Id, Name, Title, Email, Phone, Account.Name
+            FROM Contact
+            WHERE AccountId = :accountId
+            ORDER BY LastName NULLS LAST, FirstName
+            LIMIT 2000
+        ];
+    }
+
+    @AuraEnabled
+    public static void deleteContact(Id contactId) {
+        delete [SELECT Id FROM Contact WHERE Id = :contactId];
+    }
+}
